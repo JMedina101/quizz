@@ -18,6 +18,7 @@ h3 {
 .head-1 {
   font-size: 1rem;
   margin-bottom: 30px;
+  text-align: center;
 }
 .head-2 {
   font-size: 3rem;
@@ -78,8 +79,6 @@ code {
   background-color: var(--questions);
   border: 1px solid var(--activity-border);
   padding: 10px 0;
-
-  text-transform: uppercase;
   font-size: 1rem;
   font-weight: 400;
   color: var(--headingActivty);
@@ -99,23 +98,26 @@ code {
 .question-card__container {
   background-color: var(--white);
   border: 1px solid var(--border);
+  width: 600px;
 }
-
-.question-card__container {
-  width: 50%;
-}
-.question {
+.question-Container {
   background-color: var(--questions);
   padding: 20px 30px;
   border-top: 1px solid var(--border);
   border-bottom: 1px solid var(--border);
+
+  color: var(--headingColor);
+}
+.question {
+  margin: 0;
+  font-weight: 400;
 }
 .card-heading__container {
   padding: 60px 30px;
 }
 .activity_head {
-  margin-bottom: 50px;
   text-transform: uppercase;
+  text-align: justify;
 }
 .answer-block {
   display: flex;
@@ -151,7 +153,8 @@ code {
 /* media queries */
 @media (max-width: 1280px) {
   .question-card__container {
-    width: auto;
+    width: 80%;
+    margin: 0 auto;
   }
 }
 
@@ -159,4 +162,7 @@ code {
   .results-cards {
     width: auto;
   }
+}
+.bolder {
+  font-weight: bolder;
 }

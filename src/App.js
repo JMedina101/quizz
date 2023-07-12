@@ -17,15 +17,11 @@ function App() {
   return (
     <div className="canvas">
       <main className="main">
-        <div className="card-container">
-          <div className="card">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/questions" element={<Questions />} />
-              <Route path="/scores" element={<ScoreDisplay />} />
-            </Routes>
-          </div>
-        </div>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/questions" element={<Questions />} />
+          <Route path="/scores" element={<ScoreDisplay />} />
+        </Routes>
       </main>
     </div>
   );
@@ -49,7 +45,7 @@ function Home() {
   }, []);
 
   return (
-    <>
+    <div className="card">
       <div className="card-heading">
         <h1 className="head-1 heading">{headerValues?.heading}</h1>
         <h2 className="head-2 heading">{headerValues?.name}</h2>
@@ -64,12 +60,12 @@ function Home() {
               }}
               className="activity-link"
             >
-              <h2 className="activty">Activity {currActivity?.order} </h2>
+              <h2 className="activty">{currActivity?.activity_name}</h2>
             </Link>
           </div>
         ))}
       </div>
-    </>
+    </div>
   );
 }
 
@@ -82,6 +78,7 @@ function Questions() {
 
   const [displayQuestion, updateQuestion] = useState([]);
   const [questionsCount, updateQCounter] = useState(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -92,13 +89,20 @@ function Questions() {
     fetchData();
   }, []);
 
+  const questionToBold = (question) => {
+    if (question) {
+      return question.replace(/\*(.*?)\*/g, "<span class= bolder>$1</span>");
+    }
+    return "";
+  };
+
   const displayNewQuestion = (action) => {
     const isCorrect = displayQuestion.questions[questionsCount].is_correct;
 
     if (isCorrect === (action === "true")) {
       const updatedQuestion = { ...displayQuestion.questions[questionsCount] };
       // Update the necessary properties of the updatedQuestion object
-      updatedQuestion.user_answers.push("correct");
+      updatedQuestion.user_answers.push("Correct");
 
       console.log(updatedQuestion);
       const updatedQuestions = [...displayQuestion.questions];
@@ -134,9 +138,14 @@ function Questions() {
         </h1>
       </div>
       <div className="question-Container">
-        <h1 className="question head-1 heading">
-          {displayQuestion?.questions?.[questionsCount]?.stimulus}
-        </h1>
+        <h1
+          className="question head-1"
+          dangerouslySetInnerHTML={{
+            __html: questionToBold(
+              displayQuestion?.questions?.[questionsCount]?.stimulus
+            ),
+          }}
+        ></h1>
       </div>
       <div className="answer-block">
         <button
@@ -149,13 +158,8 @@ function Questions() {
           className="btn-questions"
           onClick={() => displayNewQuestion("false")}
         >
-          Wrong
+          Incorrect
         </button>
-        {/* {questionsCount === displayQuestion?.questions?.length - 1 ? (
-          <ScoreDisplay actNum={actNum} displayNewQuestion={displayQuestion} />
-        ) : (
-          <Questions />
-        )} */}
       </div>
     </div>
   );
@@ -188,8 +192,8 @@ function ScoreDisplay() {
           </div>
           <div className="activity-container">
             {displayQuestion.map((currActivity) => (
-              <div key={currActivity?.order} className="activity results">
-                <h2>Activity {currActivity?.order} </h2>
+              <div key={currActivity?.order} className="activty results">
+                <h2>Q{currActivity?.order} </h2>
                 <h2>
                   {currActivity.user_answers.length
                     ? currActivity?.user_answers
