@@ -75,6 +75,15 @@ const questionToBold = (question) => {
   return "";
 };
 
+// function RoundStartModal({ roundNumber, onStartRound }) {
+//   return (
+//     <div className="round-start-prompt">
+//       <h2>Round {roundNumber} is starting!</h2>
+//       <button onClick={onStartRound}>Start Round</button>
+//     </div>
+//   );
+// }
+
 function Questions() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
@@ -103,21 +112,6 @@ function Questions() {
     };
     fetchData();
   }, []);
-
-  // // how to handle async
-  // useEffect(() => {
-  //   if (roundsCount === 0) {
-  //     updateQCounter(0);
-  //   }
-  // }, [roundsCount]);
-
-  // useEffect(() => {
-  //   if (actNum !== 1 && displayQuestion.questions) {
-  //     setRoundsCount(displayQuestion.questions.length);
-  //   } else {
-  //     console.log("Not working");
-  //   }
-  // }, [actNum, displayQuestion.questions]);
 
   const displayNewQuestion = (action) => {
     const qTotal =
@@ -193,13 +187,13 @@ function Questions() {
     <div className="question-card__container">
       <div className="card-heading__container">
         <h1 className="activity_head head-1 heading">
-          {actNum === "1" ? display?.activity_name : display?.activity_name} /
-          {displayQuestion[roundsCount]?.round_title}
+          {actNum === "1" ? display?.activity_name : display?.activity_name}
+          {actNum !== "1" && `/${displayQuestion[roundsCount]?.round_title}`}
         </h1>
         <h1 className="question-number head-2 heading">
           Q
           {actNum === "1"
-            ? displayQuestion[roundsCount]?.order
+            ? displayQuestion[questionsCount]?.order
             : displayQuestion[roundsCount]?.questions[questionsCount]?.order}
           .
         </h1>
@@ -258,11 +252,11 @@ function ScoreDisplay() {
     fetchData();
   }, []);
 
-  Object.values(displayQuestion).forEach((eachQ) => {
-    eachQ.questions.forEach((fetchedQ) => {
-      console.log(fetchedQ.stimulus);
-    });
-  });
+  // Object.values(displayQuestion).forEach((eachQ) => {
+  //   eachQ.questions.forEach((fetchedQ) => {
+  //     console.log(fetchedQ.stimulus);
+  //   });
+  // });
 
   return (
     <>
@@ -274,23 +268,34 @@ function ScoreDisplay() {
           </div>
           <div className="activity-container">
             <div className="activity-container">
-              {Object.values(displayQuestion).map((eachQ) => (
-                <>
-                  <div className="activty results">
-                    <h2>{eachQ.round_title}</h2>
-                  </div>
-                  {eachQ.questions.map((fetchedQ) => (
-                    <div className="activty results" key={fetchedQ?.order}>
-                      <h2>{fetchedQ?.order}</h2>
-                      {fetchedQ?.user_answers.length ? (
-                        <h2>{fetchedQ?.user_answers}</h2>
+              {actNum === "1"
+                ? displayQuestion.map((currQ) => (
+                    <div className="activty results" key={currQ?.order}>
+                      <h2>Q{currQ?.order}</h2>
+                      {currQ?.user_answers.length ? (
+                        <h2 className="">{currQ?.user_answers}</h2>
                       ) : (
                         <h2>Wrong</h2>
                       )}
                     </div>
+                  ))
+                : Object.values(displayQuestion).map((eachQ) => (
+                    <div key={eachQ?.round_title}>
+                      <div className="activty round-container">
+                        <h2 className="round-results">{eachQ?.round_title}</h2>
+                      </div>
+                      {eachQ.questions.map((fetchedQ) => (
+                        <div className="activty results" key={fetchedQ?.order}>
+                          <h2>{fetchedQ?.order}</h2>
+                          {fetchedQ?.user_answers.length ? (
+                            <h2>{fetchedQ?.user_answers}</h2>
+                          ) : (
+                            <h2>Wrong</h2>
+                          )}
+                        </div>
+                      ))}
+                    </div>
                   ))}
-                </>
-              ))}
             </div>
           </div>
           <div className="home_container">

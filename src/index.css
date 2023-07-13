@@ -83,6 +83,12 @@ code {
   font-weight: 400;
   color: var(--headingActivty);
 }
+.activty h2 {
+  text-transform: uppercase;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--headingActivty);
+}
 
 .activity-link {
   text-decoration: none;
@@ -146,8 +152,14 @@ code {
 }
 
 .results-cards {
-  width: 500px;
+  width: auto;
   margin: 0 auto;
+}
+.round-container {
+  padding: 20px;
+}
+.round-results {
+  text-align: center;
 }
 
 /* media queries */
@@ -159,9 +171,6 @@ code {
 }
 
 @media (max-width: 650px) {
-  .results-cards {
-    width: auto;
-  }
 }
 .bolder {
   font-weight: bolder;
