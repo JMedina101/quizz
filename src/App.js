@@ -75,12 +75,12 @@ const questionToBold = (question) => {
   return "";
 };
 
-// function RoundStartModal({ roundNumber, onStartRound }) {
+// function RoundStartModal({ roundNumber }) {
 //   return (
-//     <div className="round-start-prompt">
-//       <h2>Round {roundNumber} is starting!</h2>
-//       <button onClick={onStartRound}>Start Round</button>
-//     </div>
+//     // <div className="round-start-prompt">
+//     //   <h2>Round {roundNumber} is starting!</h2>
+//     //   <button onClick={onStartRound}>Start Round</button>
+//     // </div>
 //   );
 // }
 
@@ -95,6 +95,7 @@ function Questions() {
   const [questionsCount, updateQCounter] = useState(0);
   const [roundsCount, setRoundsCount] = useState(0);
   const [display, setDisplays] = useState([]);
+  const [showRoundStartPrompt, setShowRoundStartPrompt] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -112,6 +113,26 @@ function Questions() {
     };
     fetchData();
   }, []);
+
+  useEffect(() => {
+    if (roundsCount > 0) {
+      setShowRoundStartPrompt(true);
+    }
+  }, [roundsCount]);
+
+  useEffect(() => {
+    const totalDuration = 3000; // Animation delay (5000 milliseconds) + Animation duration (3000 milliseconds)
+
+    const timeout = setTimeout(() => {
+      setShowRoundStartPrompt(false);
+    }, totalDuration);
+
+    return () => clearTimeout(timeout);
+  }, [roundsCount]);
+
+  // const handleStartRound = () => {
+  //   setShowRoundStartPrompt(false);
+  // };
 
   const displayNewQuestion = (action) => {
     const qTotal =
@@ -184,54 +205,71 @@ function Questions() {
   // }
 
   return (
-    <div className="question-card__container">
-      <div className="card-heading__container">
-        <h1 className="activity_head head-1 heading">
-          {actNum === "1" ? display?.activity_name : display?.activity_name}
-          {actNum !== "1" && `/${displayQuestion[roundsCount]?.round_title}`}
-        </h1>
-        <h1 className="question-number head-2 heading">
-          Q
-          {actNum === "1"
-            ? displayQuestion[questionsCount]?.order
-            : displayQuestion[roundsCount]?.questions[questionsCount]?.order}
-          .
-        </h1>
-      </div>
-      <div className="question-Container">
-        <h1
-          className="question head-1"
-          dangerouslySetInnerHTML={{
-            __html:
-              actNum === "1"
-                ? questionToBold(displayQuestion[questionsCount]?.stimulus)
-                : questionToBold(
-                    displayQuestion[roundsCount]?.questions[questionsCount]
-                      ?.stimulus
-                  ),
-          }}
-        ></h1>
-        <h1>{}</h1>
-        {/* <GetQuestions
+    <>
+      {showRoundStartPrompt && actNum !== "1" ? (
+        <div className="question-card__container round-start-prompt ">
+          <div className="card-heading__container">
+            <h2 className="activity_head head-1 heading">
+              {display?.activity_name}
+            </h2>
+            <h2 className="question-number head-2 heading">
+              {displayQuestion[roundsCount]?.round_title}
+            </h2>
+          </div>
+        </div>
+      ) : (
+        <div className="question-card__container">
+          <div className="card-heading__container">
+            <h1 className="activity_head head-1 heading">
+              {actNum === "1" ? display?.activity_name : display?.activity_name}
+              {actNum !== "1" &&
+                `/${displayQuestion[roundsCount]?.round_title}`}
+            </h1>
+            <h1 className="question-number head-2 heading">
+              Q
+              {actNum === "1"
+                ? displayQuestion[questionsCount]?.order
+                : displayQuestion[roundsCount]?.questions[questionsCount]
+                    ?.order}
+              .
+            </h1>
+          </div>
+          <div className="question-Container">
+            <h1
+              className="question head-1"
+              dangerouslySetInnerHTML={{
+                __html:
+                  actNum === "1"
+                    ? questionToBold(displayQuestion[questionsCount]?.stimulus)
+                    : questionToBold(
+                        displayQuestion[roundsCount]?.questions[questionsCount]
+                          ?.stimulus
+                      ),
+              }}
+            ></h1>
+            <h1>{}</h1>
+            {/* <GetQuestions
           questions={displayQuestion?.questions[0]?.round_title}
           actNum={actNum}
         /> */}
-      </div>
-      <div className="answer-block">
-        <button
-          className="btn-questions"
-          onClick={() => displayNewQuestion("true")}
-        >
-          Correct
-        </button>
-        <button
-          className="btn-questions"
-          onClick={() => displayNewQuestion("false")}
-        >
-          Incorrect
-        </button>
-      </div>
-    </div>
+          </div>
+          <div className="answer-block">
+            <button
+              className="btn-questions"
+              onClick={() => displayNewQuestion("true")}
+            >
+              Correct
+            </button>
+            <button
+              className="btn-questions"
+              onClick={() => displayNewQuestion("false")}
+            >
+              Incorrect
+            </button>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
