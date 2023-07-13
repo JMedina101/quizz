@@ -258,6 +258,12 @@ function ScoreDisplay() {
     fetchData();
   }, []);
 
+  Object.values(displayQuestion).forEach((eachQ) => {
+    eachQ.questions.forEach((fetchedQ) => {
+      console.log(fetchedQ.stimulus);
+    });
+  });
+
   return (
     <>
       <div className="results-container">
@@ -267,40 +273,25 @@ function ScoreDisplay() {
             <h2 className="head-2 heading">Results</h2>
           </div>
           <div className="activity-container">
-            {displayQuestion.map((currActivity) => (
-              <div key={currActivity?.order} className="activity results">
-                <h2>
-                  Q
-                  {actNum === "1"
-                    ? currActivity?.order
-                    : currActivity?.questions
-                        ?.map((round) =>
-                          round?.questions
-                            ?.map((question) => question?.order)
-                            .join(", ")
-                        )
-                        .join(", ")}
-                </h2>
-                <h2>
-                  {currActivity?.user_answers?.length
-                    ? currActivity?.user_answers
-                    : "Wrong"}
-                </h2>
-                {actNum !== "1" &&
-                  currActivity?.questions?.map((round) => (
-                    <div key={round?.order} className="nested-round">
-                      <h3>{round?.round_title}</h3>
-                      {round?.questions?.map((question) => (
-                        <div key={question?.order} className="nested-question">
-                          <p>
-                            Q{question?.order}: {question?.stimulus}
-                          </p>
-                        </div>
-                      ))}
+            <div className="activity-container">
+              {Object.values(displayQuestion).map((eachQ) => (
+                <>
+                  <div className="activty results">
+                    <h2>{eachQ.round_title}</h2>
+                  </div>
+                  {eachQ.questions.map((fetchedQ) => (
+                    <div className="activty results" key={fetchedQ?.order}>
+                      <h2>{fetchedQ?.order}</h2>
+                      {fetchedQ?.user_answers.length ? (
+                        <h2>{fetchedQ?.user_answers}</h2>
+                      ) : (
+                        <h2>Wrong</h2>
+                      )}
                     </div>
                   ))}
-              </div>
-            ))}
+                </>
+              ))}
+            </div>
           </div>
           <div className="home_container">
             <Link
