@@ -68,6 +68,12 @@ function Home() {
     </div>
   );
 }
+const questionToBold = (question) => {
+  if (question) {
+    return question.replace(/\*(.*?)\*/g, "<span class='bolder'>$1</span>");
+  }
+  return "";
+};
 
 function Questions() {
   const location = useLocation();
@@ -78,74 +84,144 @@ function Questions() {
 
   const [displayQuestion, updateQuestion] = useState([]);
   const [questionsCount, updateQCounter] = useState(0);
+  const [roundsCount, setRoundsCount] = useState(0);
+  const [display, setDisplays] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchQuestionaire();
-        updateQuestion(response.activities[actNum - 1]);
+
+        if (actNum === "1") {
+          updateQuestion(response.activities[0].questions);
+          setDisplays(response.activities[0]);
+        } else {
+          updateQuestion(response.activities[actNum - 1].questions);
+          setDisplays(response.activities[actNum - 1]);
+        }
       } catch (error) {}
     };
     fetchData();
   }, []);
 
-  const questionToBold = (question) => {
-    if (question) {
-      return question.replace(/\*(.*?)\*/g, "<span class= bolder>$1</span>");
-    }
-    return "";
-  };
+  // // how to handle async
+  // useEffect(() => {
+  //   if (roundsCount === 0) {
+  //     updateQCounter(0);
+  //   }
+  // }, [roundsCount]);
+
+  // useEffect(() => {
+  //   if (actNum !== 1 && displayQuestion.questions) {
+  //     setRoundsCount(displayQuestion.questions.length);
+  //   } else {
+  //     console.log("Not working");
+  //   }
+  // }, [actNum, displayQuestion.questions]);
 
   const displayNewQuestion = (action) => {
-    const isCorrect = displayQuestion.questions[questionsCount].is_correct;
+    const qTotal =
+      actNum === "1"
+        ? displayQuestion.length
+        : displayQuestion[roundsCount]?.questions?.length;
 
-    if (isCorrect === (action === "true")) {
-      const updatedQuestion = { ...displayQuestion.questions[questionsCount] };
-      // Update the necessary properties of the updatedQuestion object
+    const currentQuestion =
+      actNum === "1"
+        ? displayQuestion[questionsCount]
+        : displayQuestion[roundsCount]?.questions[questionsCount];
+
+    if (currentQuestion?.is_correct === (action === "true")) {
+      const updatedQuestion = { ...currentQuestion };
       updatedQuestion.user_answers.push("Correct");
 
-      console.log(updatedQuestion);
-      const updatedQuestions = [...displayQuestion.questions];
-      updatedQuestions[questionsCount] = updatedQuestion;
-
-      const updatedDisplayQuestion = {
-        ...displayQuestion,
-        questions: updatedQuestions,
-      };
-      updateQuestion(updatedDisplayQuestion);
+      if (actNum === "1") {
+        const updatedQuestions = [...displayQuestion];
+        updatedQuestions[questionsCount] = updatedQuestion;
+        updateQuestion(updatedQuestions);
+      } else {
+        const updatedQuestions = [...displayQuestion];
+        updatedQuestions[roundsCount].questions[questionsCount] =
+          updatedQuestion;
+        updateQuestion(updatedQuestions);
+      }
     }
-    updateQCounter(questionsCount + 1);
-    console.log(displayQuestion);
 
-    if (questionsCount === displayQuestion.questions.length - 1) {
-      navigate("/scores", {
-        state: {
-          displayQuestion: displayQuestion.questions,
-          actNum: actNum,
-        },
-      });
+    updateQCounter(questionsCount + 1);
+
+    if (actNum === "1") {
+      if (questionsCount === qTotal - 1) {
+        navigate("/scores", {
+          state: {
+            displayQuestion: displayQuestion,
+            actNum: actNum,
+          },
+        });
+      }
+    } else {
+      if (
+        questionsCount === qTotal - 1 &&
+        roundsCount === displayQuestion.length - 1
+      ) {
+        navigate("/scores", {
+          state: {
+            displayQuestion: displayQuestion,
+            actNum: actNum,
+          },
+        });
+      } else if (questionsCount === qTotal - 1) {
+        setRoundsCount(roundsCount + 1);
+        updateQCounter(0);
+      }
     }
   };
+
+  // if (questionsCount === currentQuestion.length - 1) {
+  //   navigate("/scores", {
+  //     state: {
+  //       displayQuestion: displayQuestion,
+  //       actNum: actNum,
+  //     },
+  //   });
+  // }
+
+  // if (questionsCount === qTotal) {
+  //   setRoundsCount(roundsCount + 1);
+  //   updateQCounter(0);
+  // }
 
   return (
     <div className="question-card__container">
       <div className="card-heading__container">
         <h1 className="activity_head head-1 heading">
-          {displayQuestion?.activity_name}
+          {actNum === "1" ? display?.activity_name : display?.activity_name} /
+          {displayQuestion[roundsCount]?.round_title}
         </h1>
         <h1 className="question-number head-2 heading">
-          Q{displayQuestion?.questions?.[questionsCount]?.order}.
+          Q
+          {actNum === "1"
+            ? displayQuestion[roundsCount]?.order
+            : displayQuestion[roundsCount]?.questions[questionsCount]?.order}
+          .
         </h1>
       </div>
       <div className="question-Container">
         <h1
           className="question head-1"
           dangerouslySetInnerHTML={{
-            __html: questionToBold(
-              displayQuestion?.questions?.[questionsCount]?.stimulus
-            ),
+            __html:
+              actNum === "1"
+                ? questionToBold(displayQuestion[questionsCount]?.stimulus)
+                : questionToBold(
+                    displayQuestion[roundsCount]?.questions[questionsCount]
+                      ?.stimulus
+                  ),
           }}
         ></h1>
+        <h1>{}</h1>
+        {/* <GetQuestions
+          questions={displayQuestion?.questions[0]?.round_title}
+          actNum={actNum}
+        /> */}
       </div>
       <div className="answer-block">
         <button
@@ -169,7 +245,7 @@ function ScoreDisplay() {
   const location = useLocation();
   const displayQuestion = location.state?.displayQuestion;
   const actNum = location.state?.actNum;
-
+  console.log(displayQuestion);
   const [scores, updateScore] = useState([]);
 
   useEffect(() => {
@@ -187,18 +263,42 @@ function ScoreDisplay() {
       <div className="results-container">
         <div className="card results-cards">
           <div className="card-heading">
-            <h1 className="head-1 heading">{scores?.activity_name} </h1>
+            <h1 className="head-1 heading">{scores?.activity_name}</h1>
             <h2 className="head-2 heading">Results</h2>
           </div>
           <div className="activity-container">
             {displayQuestion.map((currActivity) => (
-              <div key={currActivity?.order} className="activty results">
-                <h2>Q{currActivity?.order} </h2>
+              <div key={currActivity?.order} className="activity results">
                 <h2>
-                  {currActivity.user_answers.length
+                  Q
+                  {actNum === "1"
+                    ? currActivity?.order
+                    : currActivity?.questions
+                        ?.map((round) =>
+                          round?.questions
+                            ?.map((question) => question?.order)
+                            .join(", ")
+                        )
+                        .join(", ")}
+                </h2>
+                <h2>
+                  {currActivity?.user_answers?.length
                     ? currActivity?.user_answers
                     : "Wrong"}
                 </h2>
+                {actNum !== "1" &&
+                  currActivity?.questions?.map((round) => (
+                    <div key={round?.order} className="nested-round">
+                      <h3>{round?.round_title}</h3>
+                      {round?.questions?.map((question) => (
+                        <div key={question?.order} className="nested-question">
+                          <p>
+                            Q{question?.order}: {question?.stimulus}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  ))}
               </div>
             ))}
           </div>
@@ -209,7 +309,7 @@ function ScoreDisplay() {
               }}
               className="activity-link"
             >
-              <h2>Home </h2>
+              <h2>Home</h2>
             </Link>
           </div>
         </div>
