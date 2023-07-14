@@ -2,6 +2,22 @@
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+# Project Description:
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Installation](#installation)
+- [Available Scripts](#available-scripts)
+
+## Project Overview
+
+This project is a simple quizz app that has a home,questions and scores screens. The application has two flows, The first flow shows the questions directly while the second flow has questions per round. It was made with react and typescript and with vanilla html and CSS.
+
+## Installation
+
+Provide instructions on how to install and set up the project locally. Include any prerequisites or dependencies that need to be installed.
+
 ## Available Scripts
 
 In the project directory, you can run:
