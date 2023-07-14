@@ -2,7 +2,7 @@
   "name": "quizz",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://JmMedina101.github.io/quizz",
+  "homepage": "https://JMedina101.github.io/quizz",
   "dependencies": {
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
