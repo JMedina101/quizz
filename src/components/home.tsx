@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
 import { fetchQuestionaire } from "./../Api";
-import { GameData, Activity, Round } from "../models/data";
+import { GameData, Activity, Round } from "./models/data";
 import React from "react";
 
 function Home() {

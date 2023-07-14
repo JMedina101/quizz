@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Activity, Question, Round } from "../models/data";
+import { Activity, Question, Round } from "./models/data";
 import { fetchQuestionaire } from "../Api";
 import React from "react";
 
