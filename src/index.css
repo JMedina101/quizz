@@ -3,9 +3,11 @@ body {
   padding: 0;
 
   box-sizing: border-box;
+
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
     "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -18,7 +20,6 @@ h3 {
 .head-1 {
   font-size: 1rem;
   margin-bottom: 30px;
-  text-align: center;
 }
 .head-2 {
   font-size: 3rem;
@@ -152,7 +153,7 @@ code {
 }
 
 .results-cards {
-  width: auto;
+  width: 300px;
   margin: 0 auto;
 }
 .round-container {
@@ -162,26 +163,44 @@ code {
   text-align: center;
 }
 
-/* media queries */
-@media (max-width: 1280px) {
-  .question-card__container {
-    width: 80%;
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 650px) {
-}
-.bolder {
-  font-weight: bolder;
-}
-/* css animations */
 .round-start-prompt {
   animation-delay: 1.5s;
   animation-duration: 1.5s;
   animation-fill-mode: forwards;
   animation-name: slideOut;
 }
+
+.bolder {
+  font-weight: bolder;
+}
+/* mobile */
+/* media queries - for responsiveness */
+
+/* tablet */
+@media (max-width: 1080px) {
+  .question-card__container {
+    width: 80%;
+    margin: 0 auto;
+  }
+  .home-container {
+    width: 90%;
+    margin: 0 auto;
+  }
+  .answer-block {
+    padding: 40px 30px;
+    justify-content: space-evenly;
+  }
+}
+@media (max-width: 650px) {
+  .head-1 {
+    font-size: 1rem;
+  }
+  .head-2 {
+    font-size: 2rem;
+  }
+}
+
+/* css animations */
 
 @keyframes slideOut {
   0% {
@@ -192,4 +211,27 @@ code {
     transform: translateX(-100%);
     opacity: 0;
   }
+}
+
+/* scroll ddesign */
+.result-cards {
+  height: 250px;
+  overflow-y: scroll;
+  scrollbar-width: thin;
+  scrollbar-color: #888 #f1f1f1;
+}
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 30px;
+}
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: var(--headingColor);
+  border-radius: 30px;
 }

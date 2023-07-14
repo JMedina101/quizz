@@ -45,7 +45,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="card">
+    <div className="home-container card">
       <div className="card-heading">
         <h1 className="head-1 heading">{headerValues?.heading}</h1>
         <h2 className="head-2 heading">{headerValues?.name}</h2>
@@ -235,7 +235,7 @@ function Questions() {
             <h1 className="activity_head head-1 heading">
               {actNum === "1" ? display?.activity_name : display?.activity_name}
               {actNum !== "1" &&
-                `/${displayQuestion[roundsCount]?.round_title}`}
+                ` / ${displayQuestion[roundsCount]?.round_title}`}
             </h1>
             <h1 className="question-number head-2 heading">
               Q
@@ -323,39 +323,39 @@ function ScoreDisplay() {
               {actNum === "1" ? activityScore1.current : otherActivity.current}
             </h2>
           </div>
-          <div className="activity-container">
-            <div className="activity-container">
-              {actNum === "1"
-                ? displayQuestion.map((currQ) => (
-                    <div className="activty results" key={currQ?.order}>
-                      <h2>Q{currQ?.order}</h2>
 
-                      {currQ?.user_answers.length ? (
-                        <h2 className="">{currQ?.user_answers}</h2>
-                      ) : (
-                        <h2>Wrong</h2>
-                      )}
+          <div className="result-cards activity-container">
+            {actNum === "1"
+              ? displayQuestion.map((currQ) => (
+                  <div className="activty results" key={currQ?.order}>
+                    <h2>Q{currQ?.order}</h2>
+
+                    {currQ?.user_answers.length ? (
+                      <h2 className="">{currQ?.user_answers}</h2>
+                    ) : (
+                      <h2>Wrong</h2>
+                    )}
+                  </div>
+                ))
+              : Object.values(displayQuestion).map((eachQ) => (
+                  <div key={eachQ?.round_title}>
+                    <div className="activty round-container">
+                      <h2 className="round-results">{eachQ?.round_title}</h2>
                     </div>
-                  ))
-                : Object.values(displayQuestion).map((eachQ) => (
-                    <div key={eachQ?.round_title}>
-                      <div className="activty round-container">
-                        <h2 className="round-results">{eachQ?.round_title}</h2>
+                    {eachQ.questions.map((fetchedQ) => (
+                      <div className="activty results" key={fetchedQ?.order}>
+                        <h2>{fetchedQ?.order}</h2>
+                        {fetchedQ?.user_answers.length ? (
+                          <h2>{fetchedQ?.user_answers}</h2>
+                        ) : (
+                          <h2>Wrong</h2>
+                        )}
                       </div>
-                      {eachQ.questions.map((fetchedQ) => (
-                        <div className="activty results" key={fetchedQ?.order}>
-                          <h2>{fetchedQ?.order}</h2>
-                          {fetchedQ?.user_answers.length ? (
-                            <h2>{fetchedQ?.user_answers}</h2>
-                          ) : (
-                            <h2>Wrong</h2>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  ))}
-            </div>
+                    ))}
+                  </div>
+                ))}
           </div>
+
           <div className="home_container">
             <Link
               to={{
