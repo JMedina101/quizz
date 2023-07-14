@@ -28,17 +28,21 @@ function App() {
 }
 
 function Home() {
-  const [headerValues, HeaderValue] = useState(null);
-  const [activityValues, updateActivity] = useState([]);
+  // A use state  which stores the value fetched from the Api endpoint
+  // then sets the Heading display in JSX
+  const [headerValues, setHeader] = useState(null);
 
+  //Fetches and sets the activity values
+  const [activityValues, setActivity] = useState([]);
+
+  // An api call to fetch the question
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchQuestionaire();
 
-        HeaderValue(response);
-        updateActivity(response.activities);
-        console.log(response.activities);
+        setHeader(response);
+        setActivity(response.activities);
       } catch (error) {}
     };
     fetchData();
@@ -68,49 +72,43 @@ function Home() {
     </div>
   );
 }
-const questionToBold = (question) => {
-  if (question) {
-    return question.replace(/\*(.*?)\*/g, "<span class='bolder'>$1</span>");
-  }
-  return "";
-};
-
-// function RoundStartModal({ roundNumber }) {
-//   return (
-//     // <div className="round-start-prompt">
-//     //   <h2>Round {roundNumber} is starting!</h2>
-//     //   <button onClick={onStartRound}>Start Round</button>
-//     // </div>
-//   );
-// }
 
 function Questions() {
+  const navigate = useNavigate();
+
+  // fetches the current location path
   const location = useLocation();
+  // gets the query parameters and specifically gets the actNum
   const searchParams = new URLSearchParams(location.search);
   const actNum = searchParams.get("actNum");
 
-  const navigate = useNavigate();
-
-  const [displayQuestion, updateQuestion] = useState([]);
-  const [questionsCount, updateQCounter] = useState(0);
+  // Gets the questions either for Activity 1 or Activity 2 onwards
+  const [displayQuestion, setQuestion] = useState([]);
+  //Serves as the index of the Rounds
   const [roundsCount, setRoundsCount] = useState(0);
+  // serves as the index of the Questions
+  const [questionsCount, updateQCounter] = useState(0);
+
   const [display, setDisplays] = useState([]);
+  //an indicator when a new round starts
   const [showRoundStartPrompt, setShowRoundStartPrompt] = useState(true);
 
-  const [activityScore1, setActivityScore1] = useState(0);
+  // Keeps track scores for activity 1
   const Activity1Counter = useRef(0);
+  // Keeps track scores for activity 2 onwards
   const otherActivity = useRef(0);
 
+  // fetching the data from the api endpoint
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchQuestionaire();
 
         if (actNum === "1") {
-          updateQuestion(response.activities[0].questions);
+          setQuestion(response.activities[0].questions);
           setDisplays(response.activities[0]);
         } else {
-          updateQuestion(response.activities[actNum - 1].questions);
+          setQuestion(response.activities[actNum - 1].questions);
           setDisplays(response.activities[actNum - 1]);
         }
       } catch (error) {}
@@ -122,10 +120,7 @@ function Questions() {
     if (roundsCount > 0) {
       setShowRoundStartPrompt(true);
     }
-  }, [roundsCount]);
-
-  useEffect(() => {
-    const totalDuration = 3000; // Animation delay (5000 milliseconds) + Animation duration (3000 milliseconds)
+    const totalDuration = 3000; // Animation delay (1500 milliseconds) + Animation duration (1500 milliseconds)
 
     const timeout = setTimeout(() => {
       setShowRoundStartPrompt(false);
@@ -134,29 +129,28 @@ function Questions() {
     return () => clearTimeout(timeout);
   }, [roundsCount]);
 
-  // const handleStartRound = () => {
-  //   setShowRoundStartPrompt(false);
-  // };
-
   const displayNewQuestion = (action) => {
+    // gets the total questions
     const qTotal =
       actNum === "1"
         ? displayQuestion.length
         : displayQuestion[roundsCount]?.questions?.length;
 
+    // gets current question
     const currentQuestion =
       actNum === "1"
         ? displayQuestion[questionsCount]
         : displayQuestion[roundsCount]?.questions[questionsCount];
-
+    // checker for the answered question
     if (currentQuestion?.is_correct === (action === "true")) {
       const updatedQuestion = { ...currentQuestion };
       updatedQuestion.user_answers.push("Correct");
 
+      //  for updating the answer of the user
       if (actNum === "1") {
         const updatedQuestions = [...displayQuestion];
         updatedQuestions[questionsCount] = updatedQuestion;
-        updateQuestion(updatedQuestions);
+        setQuestion(updatedQuestions);
         Activity1Counter.current += 1;
 
         console.log(Activity1Counter);
@@ -164,13 +158,13 @@ function Questions() {
         const updatedQuestions = [...displayQuestion];
         updatedQuestions[roundsCount].questions[questionsCount] =
           updatedQuestion;
-        updateQuestion(updatedQuestions);
+        setQuestion(updatedQuestions);
         otherActivity.current += 1;
       }
     }
 
     updateQCounter(questionsCount + 1);
-
+    // rendering the scores page and passing  value to the scores component
     if (actNum === "1") {
       if (questionsCount === qTotal - 1) {
         navigate("/scores", {
@@ -180,8 +174,6 @@ function Questions() {
             Activity1Counter: Activity1Counter,
           },
         });
-
-        console.log(Activity1Counter);
       }
     } else {
       if (
@@ -201,20 +193,13 @@ function Questions() {
       }
     }
   };
-
-  // if (questionsCount === currentQuestion.length - 1) {
-  //   navigate("/scores", {
-  //     state: {
-  //       displayQuestion: displayQuestion,
-  //       actNum: actNum,
-  //     },
-  //   });
-  // }
-
-  // if (questionsCount === qTotal) {
-  //   setRoundsCount(roundsCount + 1);
-  //   updateQCounter(0);
-  // }
+  //Gets the current questions and adding a bold style
+  const questionToBold = (question) => {
+    if (question) {
+      return question.replace(/\*(.*?)\*/g, "<span class='bolder'>$1</span>");
+    }
+    return "";
+  };
 
   return (
     <>
@@ -259,21 +244,18 @@ function Questions() {
                       ),
               }}
             ></h1>
-            <h1>{}</h1>
-            {/* <GetQuestions
-          questions={displayQuestion?.questions[0]?.round_title}
-          actNum={actNum}
-        /> */}
           </div>
           <div className="answer-block">
             <button
               className="btn-questions"
+              // triggering the displayNewQuestions and passing true as a parameter
               onClick={() => displayNewQuestion("true")}
             >
               Correct
             </button>
             <button
               className="btn-questions"
+              // triggering the displayNewQuestions and passing true as a parameter
               onClick={() => displayNewQuestion("false")}
             >
               Incorrect
@@ -293,23 +275,17 @@ function ScoreDisplay() {
   const activityScore1 = location.state?.Activity1Counter;
   const otherActivity = location.state?.otherActivity;
 
-  const [scores, updateScore] = useState([]);
+  const [scores, displayScores] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchQuestionaire();
-        updateScore(response.activities[actNum - 1]);
+        displayScores(response.activities[actNum - 1]);
       } catch (error) {}
     };
     fetchData();
   }, []);
-
-  // Object.values(displayQuestion).forEach((eachQ) => {
-  //   eachQ.questions.forEach((fetchedQ) => {
-  //     console.log(fetchedQ.stimulus);
-  //   });
-  // });
 
   return (
     <>
@@ -355,7 +331,6 @@ function ScoreDisplay() {
                   </div>
                 ))}
           </div>
-
           <div className="home_container">
             <Link
               to={{
