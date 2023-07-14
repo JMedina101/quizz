@@ -1,7 +1,7 @@
 import logo from "./logo.svg";
 import "./App.css";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 
 import { fetchQuestionaire } from "./Api";
 
@@ -97,6 +97,10 @@ function Questions() {
   const [display, setDisplays] = useState([]);
   const [showRoundStartPrompt, setShowRoundStartPrompt] = useState(true);
 
+  const [activityScore1, setActivityScore1] = useState(0);
+  const Activity1Counter = useRef(0);
+  const otherActivity = useRef(0);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -153,11 +157,15 @@ function Questions() {
         const updatedQuestions = [...displayQuestion];
         updatedQuestions[questionsCount] = updatedQuestion;
         updateQuestion(updatedQuestions);
+        Activity1Counter.current += 1;
+
+        console.log(Activity1Counter);
       } else {
         const updatedQuestions = [...displayQuestion];
         updatedQuestions[roundsCount].questions[questionsCount] =
           updatedQuestion;
         updateQuestion(updatedQuestions);
+        otherActivity.current += 1;
       }
     }
 
@@ -169,8 +177,11 @@ function Questions() {
           state: {
             displayQuestion: displayQuestion,
             actNum: actNum,
+            Activity1Counter: Activity1Counter,
           },
         });
+
+        console.log(Activity1Counter);
       }
     } else {
       if (
@@ -181,6 +192,7 @@ function Questions() {
           state: {
             displayQuestion: displayQuestion,
             actNum: actNum,
+            otherActivity: otherActivity,
           },
         });
       } else if (questionsCount === qTotal - 1) {
@@ -277,7 +289,10 @@ function ScoreDisplay() {
   const location = useLocation();
   const displayQuestion = location.state?.displayQuestion;
   const actNum = location.state?.actNum;
-  console.log(displayQuestion);
+
+  const activityScore1 = location.state?.Activity1Counter;
+  const otherActivity = location.state?.otherActivity;
+
   const [scores, updateScore] = useState([]);
 
   useEffect(() => {
@@ -303,6 +318,10 @@ function ScoreDisplay() {
           <div className="card-heading">
             <h1 className="head-1 heading">{scores?.activity_name}</h1>
             <h2 className="head-2 heading">Results</h2>
+            <h2 className="heading">
+              Score:{" "}
+              {actNum === "1" ? activityScore1.current : otherActivity.current}
+            </h2>
           </div>
           <div className="activity-container">
             <div className="activity-container">
@@ -310,6 +329,7 @@ function ScoreDisplay() {
                 ? displayQuestion.map((currQ) => (
                     <div className="activty results" key={currQ?.order}>
                       <h2>Q{currQ?.order}</h2>
+
                       {currQ?.user_answers.length ? (
                         <h2 className="">{currQ?.user_answers}</h2>
                       ) : (
