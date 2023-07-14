@@ -28,7 +28,7 @@ function Home() {
   return (
     <div className="home-container card">
       <div className="card-heading">
-        <h1 className="head-1 heading">{headerValues?.heading}</h1>
+        <h1 className="head-1 heading">{headerValues?.heading} Hello</h1>
         <h2 className="head-2 heading">{headerValues?.name}</h2>
       </div>
       <div className="activity-container">
