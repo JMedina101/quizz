@@ -28,7 +28,7 @@ function ScoreDisplay() {
       } catch (error) {}
     };
     fetchData();
-  }, []);
+  });
 
   return (
     <>
