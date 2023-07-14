@@ -42,5 +42,10 @@
   },
   "devDependencies": {
     "gh-pages": "^5.0.0"
-  }
+  },
+  "files": [
+    "build",
+    "models",
+    "setupProxy.js"
+  ]
 }
