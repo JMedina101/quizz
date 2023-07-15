@@ -3,8 +3,7 @@ import ScoreDisplay from "./components/scores.tsx";
 import Questions from "./components/questions.tsx";
 
 import { Route, Routes } from "react-router-dom";
-import "./components/models/data.tsx";
-// import "./components/models/setupProxy.js";
+
 function App() {
   return (
     <div className="canvas">
